@@ -4,31 +4,24 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-
-	"github.com/shellingford330/auth/domain/model"
+	"strconv"
 )
 
-func (u UserHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
+func (u UserHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 	// リクエストデコード
-	var requestBody userCreateRequest
-	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	// ユーザ登録
-	user := &model.User{
-		Name:  requestBody.Name,
-		Email: requestBody.Email,
-		Image: requestBody.Image,
-	}
-	user, err = u.UserRepository.InsertUser(context.Background(), user)
+	user, err := u.UserRepository.GetUser(context.Background(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 	// レスポンスセット
-	data, err := json.Marshal(&userCreateResponse{
+	data, err := json.Marshal(&userGetResponse{
 		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
@@ -46,13 +39,7 @@ func (u UserHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-type userCreateRequest struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Image string `json:"image"`
-}
-
-type userCreateResponse struct {
+type userGetResponse struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
