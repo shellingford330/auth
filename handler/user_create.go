@@ -28,7 +28,7 @@ func (u UserHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// レスポンスセット
-	data, err := json.Marshal(&userCreateResponse{
+	data, err := json.Marshal(userCreateResponse{
 		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,

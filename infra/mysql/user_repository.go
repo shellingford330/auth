@@ -32,6 +32,9 @@ func (u *userRepositoryImpl) GetUser(ctx context.Context, id int) (*model.User, 
 	user := model.User{ID: id}
 	err := u.DB.QueryRow("SELECT name, email, image FROM users WHERE id = ?", id).Scan(&user.Name, &user.Email, &user.Image)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &user, nil

@@ -3,32 +3,44 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 )
 
 func (u UserHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
-	// リクエストデコード
+	// ユーザID取得
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	// ユーザ登録
+	// ユーザ取得
 	user, err := u.UserRepository.GetUser(context.Background(), id)
 	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if user == nil {
+		log.Printf("cannot get user(id=%d))\n", id)
+		http.Error(w, "cannot get users", http.StatusBadRequest)
+		return
 	}
 
 	// レスポンスセット
-	data, err := json.Marshal(&userGetResponse{
+	data, err := json.Marshal(userGetResponse{
 		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
 		Image: user.Image,
 	})
 	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	// CORS対応
