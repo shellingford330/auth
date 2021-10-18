@@ -3,39 +3,47 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
-
-	"github.com/shellingford330/auth/domain/model"
+	"strconv"
 )
 
-func (u UserHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
-	// リクエストデコード
-	var requestBody userCreateRequest
-	err := json.NewDecoder(r.Body).Decode(&requestBody)
+func (u UserHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
+	// ユーザID取得
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	// ユーザ登録
-	user := &model.User{
-		Name:  requestBody.Name,
-		Email: requestBody.Email,
-		Image: requestBody.Image,
-	}
-	user, err = u.UserRepository.InsertUser(context.Background(), user)
+	// ユーザメールアドレス取得
+	email := r.URL.Query().Get("email")
+
+	// ユーザ取得
+	user, err := u.UserRepository.GetUser(context.Background(), id, email)
 	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if user == nil {
+		log.Printf("cannot get user(id=%d))\n", id)
+		http.Error(w, "cannot get users", http.StatusBadRequest)
+		return
 	}
 
 	// レスポンスセット
-	data, err := json.Marshal(userCreateResponse{
+	data, err := json.Marshal(userGetResponse{
 		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
 		Image: user.Image,
 	})
 	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	// CORS対応
@@ -46,13 +54,7 @@ func (u UserHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-type userCreateRequest struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Image string `json:"image"`
-}
-
-type userCreateResponse struct {
+type userGetResponse struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
