@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"strings"
 
 	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/domain/repository"
@@ -28,9 +29,18 @@ func (u *userRepositoryImpl) InsertUser(ctx context.Context, user *model.User) (
 	return user, nil
 }
 
-func (u *userRepositoryImpl) GetUser(ctx context.Context, id int) (*model.User, error) {
-	user := model.User{ID: id}
-	err := u.DB.QueryRow("SELECT name, email, image FROM users WHERE id = ?", id).Scan(&user.Name, &user.Email, &user.Image)
+func (u *userRepositoryImpl) GetUser(ctx context.Context, id int, email string) (*model.User, error) {
+	conds, params := []string{}, []interface{}{}
+	if id != 0 {
+		conds = append(conds, "id = ?")
+		params = append(params, id)
+	}
+	if email != "" {
+		conds = append(conds, "email = ?")
+		params = append(params, email)
+	}
+	user := model.User{}
+	err := u.DB.QueryRow("SELECT id, name, email, image FROM users WHERE "+strings.Join(conds, " AND "), params...).Scan(&user.ID, &user.Name, &user.Email, &user.Image)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
