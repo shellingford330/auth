@@ -1,0 +1,15 @@
+syntax = "proto3";
+package auth;
+
+option go_package = "github.com/shellingford330/auth/presentation/grpc/go/auth";
+
+service Auth {
+  rpc CreateUser(User) returns (User) {}
+}
+
+message User {
+  int64 ID = 1;
+  string Name = 2;
+  string Email = 3;
+  string Image = 4;
+}
