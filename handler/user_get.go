@@ -21,17 +21,7 @@ func (u UserHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 	email := r.URL.Query().Get("email")
 
 	// ユーザ取得
-	user, err := u.UserRepository.GetUser(context.Background(), id, email)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if user == nil {
-		log.Printf("cannot get user(id=%d))\n", id)
-		http.Error(w, "cannot get users", http.StatusBadRequest)
-		return
-	}
+	user, err := u.UserUseCase.GetUser(context.Background(), id, email)
 
 	// レスポンスセット
 	data, err := json.Marshal(userGetResponse{

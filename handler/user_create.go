@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-
-	"github.com/shellingford330/auth/domain/model"
 )
 
 func (u UserHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
@@ -17,12 +15,7 @@ func (u UserHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ユーザ登録
-	user := &model.User{
-		Name:  requestBody.Name,
-		Email: requestBody.Email,
-		Image: requestBody.Image,
-	}
-	user, err = u.UserRepository.InsertUser(context.Background(), user)
+	user, err := u.UserUseCase.CreateUser(context.Background(), requestBody.Name, requestBody.Email, requestBody.Image)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

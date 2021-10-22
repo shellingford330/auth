@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"github.com/shellingford330/auth/domain/repository"
+	"github.com/shellingford330/auth/usecase"
 )
 
 type UserHandler struct {
-	repository.UserRepository
+	usecase.UserUseCase
 }
