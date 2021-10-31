@@ -13,6 +13,7 @@ type UserUseCase interface {
 	GetUser(ctx context.Context, id int, email string) (*model.User, error)
 	GetUserByProviderAccountID(ctx context.Context, providerID, providerAccountID string) (*model.User, error)
 	CreateUser(ctx context.Context, name, email, image string) (*model.User, error)
+	UpdateUser(ctx context.Context, id int, name, email, image string) (*model.User, error)
 }
 
 type userUseCaseImpl struct {
@@ -55,6 +56,20 @@ func (u *userUseCaseImpl) CreateUser(ctx context.Context, name, email, image str
 	}
 	user, err := u.UserRepository.InsertUser(context.Background(), user)
 	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (u *userUseCaseImpl) UpdateUser(ctx context.Context, id int, name, email, image string) (*model.User, error) {
+	// TODO: コンストラクタ
+	user := &model.User{
+		ID:    id,
+		Name:  name,
+		Email: email,
+		Image: image,
+	}
+	if err := u.UserRepository.UpdateUser(ctx, user); err != nil {
 		return nil, err
 	}
 	return user, nil

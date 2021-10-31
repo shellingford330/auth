@@ -11,8 +11,8 @@ import (
 
 func main() {
 	handler := handler.Handler{
-		handler.UserHandler{
-			usecase.NewUserUseCase(
+		UserHandler: handler.UserHandler{
+			UserUseCase: usecase.NewUserUseCase(
 				rdb.NewUserRepository(mysql.DB),
 				rdb.NewUserQueryService(mysql.DB),
 			),
