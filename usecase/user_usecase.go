@@ -48,13 +48,11 @@ func (u *userUseCaseImpl) GetUserByProviderAccountID(
 }
 
 func (u *userUseCaseImpl) CreateUser(ctx context.Context, name, email, image string) (*model.User, error) {
-	// TODO: コンストラクタ
-	user := &model.User{
-		Name:  name,
-		Email: email,
-		Image: image,
+	user, err := model.NewUser(name, email, image)
+	if err != nil {
+		return nil, err
 	}
-	user, err := u.UserRepository.InsertUser(context.Background(), user)
+	user, err = u.UserRepository.InsertUser(context.Background(), user)
 	if err != nil {
 		return nil, err
 	}
@@ -62,12 +60,9 @@ func (u *userUseCaseImpl) CreateUser(ctx context.Context, name, email, image str
 }
 
 func (u *userUseCaseImpl) UpdateUser(ctx context.Context, id int, name, email, image string) (*model.User, error) {
-	// TODO: コンストラクタ
-	user := &model.User{
-		ID:    id,
-		Name:  name,
-		Email: email,
-		Image: image,
+	user, err := model.NewUser(name, email, image)
+	if err != nil {
+		return nil, err
 	}
 	if err := u.UserRepository.UpdateUser(ctx, user); err != nil {
 		return nil, err
