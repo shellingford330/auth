@@ -15,6 +15,10 @@ type UserHandler struct {
 	usecase.UserUseCase
 }
 
+func NewUserHandler(u usecase.UserUseCase) *UserHandler {
+	return &UserHandler{u}
+}
+
 // handle to create user
 func (u *UserHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	var requestBody userCreateRequest

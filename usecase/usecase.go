@@ -4,10 +4,11 @@ import "github.com/google/wire"
 
 type UseCase struct {
 	UserUseCase
+	AccountUseCase
 }
 
-var Set = wire.NewSet(NewUserUseCase)
+var Set = wire.NewSet(NewUseCase, NewUserUseCase, NewAccountUseCase)
 
-func NewUseCase(u UserUseCase) *UseCase {
-	return &UseCase{u}
+func NewUseCase(u UserUseCase, a AccountUseCase) *UseCase {
+	return &UseCase{u, a}
 }

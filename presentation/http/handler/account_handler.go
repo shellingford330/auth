@@ -13,6 +13,10 @@ type AccountHandler struct {
 	usecase.AccountUseCase
 }
 
+func NewAccountHandler(a usecase.AccountUseCase) *AccountHandler {
+	return &AccountHandler{a}
+}
+
 func (a *AccountHandler) HandleLinkAccount(w http.ResponseWriter, r *http.Request) {
 	var requestBody linkAccountRequest
 	err := json.NewDecoder(r.Body).Decode(&requestBody)

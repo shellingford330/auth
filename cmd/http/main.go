@@ -1,22 +1,8 @@
 package main
 
-import (
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/shellingford330/auth/infra/rdb"
-	"github.com/shellingford330/auth/infra/rdb/mysql"
-	"github.com/shellingford330/auth/presentation/http"
-	"github.com/shellingford330/auth/presentation/http/handler"
-	"github.com/shellingford330/auth/usecase"
-)
+import "log"
 
 func main() {
-	handler := handler.Handler{
-		UserHandler: handler.UserHandler{
-			UserUseCase: usecase.NewUserUseCase(
-				rdb.NewUserRepository(mysql.DB),
-				rdb.NewUserQueryService(mysql.DB),
-			),
-		},
-	}
-	http.Serve(handler)
+	server := initializeServer()
+	log.Fatalf("failed to linsten and serve. %+v", server.Start())
 }

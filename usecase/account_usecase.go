@@ -16,6 +16,10 @@ type accountUseCaseImpl struct {
 	repository.AccountRepository
 }
 
+func NewAccountUseCase(a repository.AccountRepository) AccountUseCase {
+	return &accountUseCaseImpl{a}
+}
+
 func (a *accountUseCaseImpl) LinkAccount(ctx context.Context, params *LinkAccountParams) (*model.Account, error) {
 	account, err := model.NewAccount(params.ProviderID, params.ProviderType, params.ProviderAccountID, params.UserID)
 	if err != nil {
