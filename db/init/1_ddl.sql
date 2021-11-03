@@ -20,3 +20,18 @@ CREATE TABLE IF NOT EXISTS `shellingford`.`users` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 COMMENT = 'ユーザ';
+
+-- -----------------------------------------------------
+-- Table `shellingford`.`accounts`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `shellingford`.`accounts` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ユーザID',
+  `name` VARCHAR(64) NOT NULL COMMENT 'ユーザ名',
+  `email` VARCHAR(64) NOT NULL COMMENT 'メールアドレス',
+  `password` VARCHAR(128) COMMENT 'パスワードハッシュ',
+  `image` VARCHAR(256) COMMENT 'アイコンURL',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+COMMENT = 'ユーザ';
