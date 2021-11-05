@@ -30,9 +30,6 @@ func (u *userUseCaseImpl) GetUser(ctx context.Context, id, email string) (*model
 	if err != nil {
 		return nil, err
 	}
-	if user == nil {
-		return nil, fmt.Errorf("cannot get user(id=%s))", id)
-	}
 	return user, nil
 }
 
@@ -42,7 +39,8 @@ func (u *userUseCaseImpl) GetUserByProviderAccountID(
 ) (*model.User, error) {
 	user, err := u.UserQueryService.FetchUserByProviderAccountID(ctx, providerID, providerAccountID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get user by provider account id. providerID=%s, providerAccountID=%s: %w",
+			providerID, providerAccountID, err)
 	}
 	return user, nil
 }
@@ -50,11 +48,11 @@ func (u *userUseCaseImpl) GetUserByProviderAccountID(
 func (u *userUseCaseImpl) CreateUser(ctx context.Context, name, email, image string) (*model.User, error) {
 	user, err := model.NewUser(name, email, image)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to initialize user. %w", err)
 	}
-	user, err = u.UserRepository.InsertUser(context.Background(), user)
+	user, err = u.UserRepository.InsertUser(ctx, user)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to insert user. %w", err)
 	}
 	return user, nil
 }

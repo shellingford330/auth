@@ -23,7 +23,7 @@ func (u *userQueryServiceImpl) FetchUserByProviderAccountID(
 ) (*model.User, error) {
 	user := model.User{}
 	err := u.DB.QueryRow(
-		"SELECT `users`.`id`, `users`.`name`, `users`.`email`, `users`.`image` FROM `users` INNER JOIN `accounts` ON `accounts`.`user_id` = `users`.`id` WHERE `accounts`.`provider_id` = ? AND `accounts`.`provider_account_id = ?`",
+		"SELECT `users`.`id`, `users`.`name`, `users`.`email`, `users`.`image` FROM `users` INNER JOIN `accounts` ON `accounts`.`user_id` = `users`.`id` WHERE `accounts`.`provider_id` = ? AND `accounts`.`provider_account_id` = ?",
 		providerID, providerAccountID,
 	).Scan(&user.ID, &user.Name, &user.Email, &user.Image)
 	if err != nil {

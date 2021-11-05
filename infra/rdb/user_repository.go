@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"strings"
-	"time"
 
 	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/domain/repository"
@@ -21,21 +20,14 @@ func NewUserRepository(db *sql.DB) repository.UserRepository {
 
 func (u *userRepositoryImpl) InsertUser(ctx context.Context, user *model.User) (*model.User, error) {
 	id := ulid.Generate()
-	stmt, err := u.DB.Prepare("INSERT INTO users (id, name, email, image) VALUES (?, ?, ?, ?) RETURNING created_at, updated_at")
+	stmt, err := u.DB.Prepare("INSERT INTO users (id, name, email, image) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return nil, err
 	}
-	var createdAt, updatedAt time.Time
-	if err = stmt.QueryRow(id, user.Name, user.Email, user.Image).Scan(&createdAt, &updatedAt); err != nil {
+	if _, err = stmt.Exec(id, user.Name, user.Email, user.Image); err != nil {
 		return nil, err
 	}
 	if err := user.SetID(id); err != nil {
-		return nil, err
-	}
-	if err := user.SetCreatedAt(createdAt); err != nil {
-		return nil, err
-	}
-	if err := user.SetUpdatedAt(updatedAt); err != nil {
 		return nil, err
 	}
 	return user, nil

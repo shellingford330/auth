@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `shellingford`.`accounts` (
   `provider_id` VARCHAR(64) NOT NULL COMMENT 'プロバイダID',
   `provider_type` VARCHAR(64) NOT NULL COMMENT 'プロバイダタイプ',
   `provider_account_id` VARCHAR(128) COMMENT 'プロバイダアカウントID',
-  `user_id` BIGINT UNSIGNED COMMENT 'ユーザID',
+  `user_id` VARCHAR(26) NOT NULL COMMENT 'ユーザID',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `shellingford`.`accounts` (
     FOREIGN KEY (`user_id`)
     REFERENCES `shellingford`.`users` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION))
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'アカウント';
 

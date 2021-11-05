@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/usecase"
 )
 
@@ -36,10 +37,7 @@ func (u *UserHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := json.Marshal(&userResponse{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-		Image: user.Image,
+		User: user,
 	})
 	if err != nil {
 		log.Println(err)
@@ -56,10 +54,7 @@ type userCreateRequest struct {
 }
 
 type userResponse struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Image string `json:"image"`
+	User *model.User `json:"user"`
 }
 
 func (u *UserHandler) HandleGetByProviderAccountID(w http.ResponseWriter, r *http.Request) {
@@ -74,10 +69,7 @@ func (u *UserHandler) HandleGetByProviderAccountID(w http.ResponseWriter, r *htt
 	}
 
 	data, err := json.Marshal(userResponse{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-		Image: user.Image,
+		User: user,
 	})
 	if err != nil {
 		log.Println(err)
@@ -99,10 +91,7 @@ func (u *UserHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := json.Marshal(userResponse{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-		Image: user.Image,
+		User: user,
 	})
 	if err != nil {
 		log.Println(err)
@@ -131,10 +120,7 @@ func (u *UserHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := json.Marshal(&userResponse{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-		Image: user.Image,
+		User: user,
 	})
 	if err != nil {
 		log.Println(err)
