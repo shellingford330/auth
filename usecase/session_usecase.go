@@ -13,6 +13,7 @@ import (
 type SessionUseCase interface {
 	CreateSession(ctx context.Context, params *CreateSessionParams) (*model.Session, error)
 	GetSession(ctx context.Context, sessionToken string) (*model.Session, error)
+	UpdateSessionExpires(ctx context.Context, id string, expires time.Time) (*model.Session, error)
 }
 
 type sessionUseCaseImpl struct {
@@ -46,6 +47,17 @@ func (s *sessionUseCaseImpl) GetSession(ctx context.Context, sessionToken string
 	session, err := s.SessionQueryService.GetSessionBySessionToken(ctx, sessionToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get session. sessionToken=%s: %w", sessionToken, err)
+	}
+	return session, nil
+}
+
+func (s *sessionUseCaseImpl) UpdateSessionExpires(ctx context.Context, id string, expires time.Time) (*model.Session, error) {
+	session, err := s.SessionQueryService.GetSessionByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("session not found. id=%s: %w", id, err)
+	}
+	if err := s.SessionRepository.UpdateSession(ctx, session); err != nil {
+		return nil, fmt.Errorf("failed to update session expires.: %w", err)
 	}
 	return session, nil
 }

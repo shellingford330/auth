@@ -31,3 +31,16 @@ func (s *sessionRepositoryImpl) InsertSession(ctx context.Context, session *mode
 	}
 	return session, nil
 }
+
+func (s *sessionRepositoryImpl) UpdateSession(ctx context.Context, session *model.Session) error {
+	stmt, err := s.DB.Prepare("UPDATE sessions SET expires = ?, session_token = ?, user_id = ? WHERE id = ?")
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(session.ID, session.Expires, session.SessionToken, session.UserID, session.ID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

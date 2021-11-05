@@ -46,7 +46,7 @@ COMMENT = 'アカウント';
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `shellingford`.`sessions` (
   `id` VARCHAR(26) NOT NULL COMMENT 'セッションID(ulid)',
-  `expires` VARCHAR(64) NOT NULL COMMENT '期限',
+  `expires` TIMESTAMP NOT NULL COMMENT '期限',
   `session_token` VARCHAR(64) NOT NULL COMMENT 'セッショントークン',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
