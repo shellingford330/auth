@@ -20,6 +20,9 @@ func NewAccount(providerID, providerType, providerAccountID, userID string) (*Ac
 	if err := account.SetProviderAccountID(providerAccountID); err != nil {
 		return nil, err
 	}
+	if err := account.SetUserID(userID); err != nil {
+		return nil, err
+	}
 	return &account, nil
 }
 
@@ -44,5 +47,13 @@ func (a *Account) SetProviderAccountID(providerAccountID string) error {
 		return errors.New("ProviderAccountID is blank")
 	}
 	a.ProviderAccountID = providerAccountID
+	return nil
+}
+
+func (a *Account) SetUserID(userID string) error {
+	if userID == "" {
+		return errors.New("userID is blank")
+	}
+	a.UserID = userID
 	return nil
 }

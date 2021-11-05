@@ -17,7 +17,7 @@ func NewAccountRepository(db *sql.DB) repository.AccountRepository {
 }
 
 func (a *accountRepositoryImpl) InsertAccount(ctx context.Context, account *model.Account) (*model.Account, error) {
-	stmt, err := a.DB.Prepare("INSERT INTO accounts (provider_id, provider_type, provider_account_id, user_id), VALUES (?, ?, ?, ?)")
+	stmt, err := a.DB.Prepare("INSERT INTO accounts (provider_id, provider_type, provider_account_id, user_id) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return nil, err
 	}

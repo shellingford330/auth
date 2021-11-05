@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 
+	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/usecase"
 )
 
@@ -37,10 +37,7 @@ func (u *UserHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := json.Marshal(&userResponse{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-		Image: user.Image,
+		User: user,
 	})
 	if err != nil {
 		log.Println(err)
@@ -57,10 +54,7 @@ type userCreateRequest struct {
 }
 
 type userResponse struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Image string `json:"image"`
+	User *model.User `json:"user"`
 }
 
 func (u *UserHandler) HandleGetByProviderAccountID(w http.ResponseWriter, r *http.Request) {
@@ -75,10 +69,7 @@ func (u *UserHandler) HandleGetByProviderAccountID(w http.ResponseWriter, r *htt
 	}
 
 	data, err := json.Marshal(userResponse{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-		Image: user.Image,
+		User: user,
 	})
 	if err != nil {
 		log.Println(err)
@@ -89,12 +80,7 @@ func (u *UserHandler) HandleGetByProviderAccountID(w http.ResponseWriter, r *htt
 }
 
 func (u *UserHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	id := r.URL.Query().Get("id")
 	email := r.URL.Query().Get("email")
 
 	user, err := u.UserUseCase.GetUser(context.Background(), id, email)
@@ -105,10 +91,7 @@ func (u *UserHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := json.Marshal(userResponse{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-		Image: user.Image,
+		User: user,
 	})
 	if err != nil {
 		log.Println(err)
@@ -119,15 +102,10 @@ func (u *UserHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	id := r.URL.Query().Get("id")
 
 	var requestBody userUpdateRequest
-	err = json.NewDecoder(r.Body).Decode(&requestBody)
+	err := json.NewDecoder(r.Body).Decode(&requestBody)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -142,10 +120,7 @@ func (u *UserHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := json.Marshal(&userResponse{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-		Image: user.Image,
+		User: user,
 	})
 	if err != nil {
 		log.Println(err)

@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"strings"
-	"time"
 
 	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/domain/repository"
+	"github.com/shellingford330/auth/pkg/ulid"
 )
 
 type userRepositoryImpl struct {
@@ -19,22 +19,15 @@ func NewUserRepository(db *sql.DB) repository.UserRepository {
 }
 
 func (u *userRepositoryImpl) InsertUser(ctx context.Context, user *model.User) (*model.User, error) {
-	stmt, err := u.DB.Prepare("INSERT INTO users (name, email, image) VALUES (?, ?, ?) RETURNING id, created_at, updated_at")
+	id := ulid.Generate()
+	stmt, err := u.DB.Prepare("INSERT INTO users (id, name, email, image) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return nil, err
 	}
-	var id int
-	var createdAt, updatedAt time.Time
-	if err = stmt.QueryRow(user.Name, user.Email, user.Image).Scan(&id, &createdAt, &updatedAt); err != nil {
+	if _, err = stmt.Exec(id, user.Name, user.Email, user.Image); err != nil {
 		return nil, err
 	}
 	if err := user.SetID(id); err != nil {
-		return nil, err
-	}
-	if err := user.SetCreatedAt(createdAt); err != nil {
-		return nil, err
-	}
-	if err := user.SetUpdatedAt(updatedAt); err != nil {
 		return nil, err
 	}
 	return user, nil
@@ -53,9 +46,9 @@ func (u *userRepositoryImpl) UpdateUser(ctx context.Context, user *model.User) e
 	return nil
 }
 
-func (u *userRepositoryImpl) GetUser(ctx context.Context, id int, email string) (*model.User, error) {
+func (u *userRepositoryImpl) GetUser(ctx context.Context, id, email string) (*model.User, error) {
 	conds, params := []string{}, []interface{}{}
-	if id != 0 {
+	if id != "" {
 		conds = append(conds, "id = ?")
 		params = append(params, id)
 	}

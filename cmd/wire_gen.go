@@ -24,7 +24,10 @@ func initializeServer() presentation.Server {
 	userUseCase := usecase.NewUserUseCase(userRepository, userQueryService)
 	accountRepository := rdb.NewAccountRepository(db)
 	accountUseCase := usecase.NewAccountUseCase(accountRepository)
-	handlerHandler := handler.NewHandler(userUseCase, accountUseCase)
+	sessionRepository := rdb.NewSessionRepository(db)
+	sessionQueryService := rdb.NewSessionQueryService(db)
+	sessionUseCase := usecase.NewSessionUseCase(sessionRepository, sessionQueryService)
+	handlerHandler := handler.NewHandler(userUseCase, accountUseCase, sessionUseCase)
 	server := http.NewServer(handlerHandler)
 	return server
 }
