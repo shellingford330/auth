@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	ID        int       `json:"id"`
+	ID        string    `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	Image     string    `json:"image"`
@@ -28,8 +28,8 @@ func NewUser(name, email, image string) (*User, error) {
 	return &user, nil
 }
 
-func (u *User) SetID(id int) error {
-	if id > 0 {
+func (u *User) SetID(id string) error {
+	if id == "" {
 		return errors.New("id is less than or equal 0")
 	}
 	u.ID = id
