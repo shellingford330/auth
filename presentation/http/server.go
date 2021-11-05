@@ -25,7 +25,8 @@ func (s *Server) Start() error {
 	http.HandleFunc("/user/account", s.UserHandler.HandleGetByProviderAccountID)
 	http.HandleFunc("/user/update", s.UserHandler.HandleUpdate)
 	http.HandleFunc("/account/link", s.AccountHandler.HandleLinkAccount)
-	// http.HandleFunc("/session/create",)
+	http.HandleFunc("/session/create", s.SessionHandler.HandleCreate)
+	http.HandleFunc("/session", s.SessionHandler.HandleGet)
 	// TODO: ENVから取得する
 	log.Println("Server running ...")
 	return http.ListenAndServe(":8080", nil)

@@ -3,6 +3,7 @@ package rdb
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/usecase/query"
@@ -26,7 +27,7 @@ func (u *userQueryServiceImpl) FetchUserByProviderAccountID(
 		providerID, providerAccountID,
 	).Scan(&user.ID, &user.Name, &user.Email, &user.Image)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, err
