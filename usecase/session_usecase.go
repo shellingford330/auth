@@ -12,8 +12,9 @@ import (
 
 type SessionUseCase interface {
 	CreateSession(ctx context.Context, params *CreateSessionParams) (*model.Session, error)
-	GetSession(ctx context.Context, sessionToken string) (*model.Session, error)
+	GetSessionBySessionToken(ctx context.Context, sessionToken string) (*model.Session, error)
 	UpdateSessionExpires(ctx context.Context, id string, expires time.Time) (*model.Session, error)
+	DeleteSessionBySessionToken(ctx context.Context, sessionToken string) error
 }
 
 type sessionUseCaseImpl struct {
@@ -43,7 +44,7 @@ type CreateSessionParams struct {
 	UserID       string
 }
 
-func (s *sessionUseCaseImpl) GetSession(ctx context.Context, sessionToken string) (*model.Session, error) {
+func (s *sessionUseCaseImpl) GetSessionBySessionToken(ctx context.Context, sessionToken string) (*model.Session, error) {
 	session, err := s.SessionQueryService.GetSessionBySessionToken(ctx, sessionToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get session. sessionToken=%s: %w", sessionToken, err)
@@ -60,4 +61,15 @@ func (s *sessionUseCaseImpl) UpdateSessionExpires(ctx context.Context, id string
 		return nil, fmt.Errorf("failed to update session expires.: %w", err)
 	}
 	return session, nil
+}
+
+func (s *sessionUseCaseImpl) DeleteSessionBySessionToken(ctx context.Context, sessionToken string) error {
+	session, err := s.SessionQueryService.GetSessionBySessionToken(ctx, sessionToken)
+	if err != nil {
+		return fmt.Errorf("failed to get session. sessionToken=%s: %w", sessionToken, err)
+	}
+	if err = s.SessionRepository.DeleteSession(ctx, session.ID); err != nil {
+		return fmt.Errorf("failed to delete session. id=%s: %w", session.ID, err)
+	}
+	return nil
 }

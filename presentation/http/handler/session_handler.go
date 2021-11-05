@@ -68,7 +68,7 @@ type sessionResponse struct {
 func (s *SessionHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 	sessionToken := r.URL.Query().Get("session_token")
 
-	session, err := s.SessionUseCase.GetSession(context.Background(), sessionToken)
+	session, err := s.SessionUseCase.GetSessionBySessionToken(context.Background(), sessionToken)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -123,4 +123,16 @@ func (s *SessionHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 
 type updateSessionRequest struct {
 	Expires time.Time `json:"expires"`
+}
+
+func (s *SessionHandler) HandleDelete(w http.ResponseWriter, r *http.Request) {
+	sessionToken := r.URL.Query().Get("session_token")
+
+	err := s.SessionUseCase.DeleteSessionBySessionToken(context.Background(), sessionToken)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
 }

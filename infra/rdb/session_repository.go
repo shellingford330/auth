@@ -44,3 +44,8 @@ func (s *sessionRepositoryImpl) UpdateSession(ctx context.Context, session *mode
 	}
 	return nil
 }
+
+func (s *sessionRepositoryImpl) DeleteSession(ctx context.Context, id string) error {
+	_, err := s.DB.Exec("DELETE FROM sessions WHERE id = ?", id)
+	return err
+}
