@@ -31,7 +31,7 @@ func Serve(server *Server) {
 func (s *Server) CreateUser(ctx context.Context, r *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	user, err := s.UserUseCase.CreateUser(ctx, r.Name, r.Email, r.Image)
 	return &pb.CreateUserResponse{
-		ID:    int64(user.ID),
+		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
 		Image: user.Image,

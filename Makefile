@@ -5,7 +5,7 @@ PROTO_GEN_DIR := ./pkg/grpc/go
 
 .PHONY: serve
 serve: 
-	go run cmd/grpc/main.go
+	@go run ./cmd
 
 .PHONY: protoc
 protoc:

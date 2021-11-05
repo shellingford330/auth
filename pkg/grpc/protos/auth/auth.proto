@@ -14,7 +14,7 @@ message CreateUserRequest {
 }
 
 message CreateUserResponse {
-  int64 ID = 1;
+  string ID = 1;
   string Name = 2;
   string Email = 3;
   string Image = 4;

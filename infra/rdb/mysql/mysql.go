@@ -22,6 +22,8 @@ func init() {
 var Set = wire.NewSet(
 	rdb.NewUserRepository,
 	rdb.NewAccountRepository,
+	rdb.NewSessionRepository,
 	rdb.NewUserQueryService,
+	rdb.NewSessionQueryService,
 	wire.Value(DB),
 )
