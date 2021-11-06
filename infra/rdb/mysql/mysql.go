@@ -13,7 +13,7 @@ var DB *sql.DB
 
 func init() {
 	var err error
-	DB, err = sql.Open("mysql", "root:password@/shellingford")
+	DB, err = sql.Open("mysql", "root:password@/shellingford?parseTime=true")
 	if err != nil {
 		panic(err)
 	}

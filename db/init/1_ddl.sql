@@ -45,11 +45,16 @@ COMMENT = 'アカウント';
 -- Table `shellingford`.`sessions`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `shellingford`.`sessions` (
-  `id` VARCHAR(26) NOT NULL COMMENT 'セッションID(ulid)',
+  `session_token` VARCHAR(64) NOT NULL COMMENT 'セッショントークン(ulid)',
   `expires` TIMESTAMP NOT NULL COMMENT '期限',
-  `session_token` VARCHAR(64) NOT NULL COMMENT 'セッショントークン',
+  `user_id` VARCHAR(26) NOT NULL COMMENT 'ユーザID',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`))
+  PRIMARY KEY (`session_token`),
+  CONSTRAINT `fk_session_user_id`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `shellingford`.`users` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'セッション';

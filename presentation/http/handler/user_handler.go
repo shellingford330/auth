@@ -68,7 +68,7 @@ func (u *UserHandler) HandleGetByProviderAccountID(w http.ResponseWriter, r *htt
 		return
 	}
 
-	data, err := json.Marshal(userResponse{
+	data, err := json.Marshal(&userResponse{
 		User: user,
 	})
 	if err != nil {
@@ -90,7 +90,7 @@ func (u *UserHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := json.Marshal(userResponse{
+	data, err := json.Marshal(&userResponse{
 		User: user,
 	})
 	if err != nil {

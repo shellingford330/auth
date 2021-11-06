@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/usecase"
 )
 
@@ -39,10 +40,7 @@ func (s *SessionHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := json.Marshal(&sessionResponse{
-		ID:           session.ID,
-		Expires:      session.Expires,
-		SessionToken: session.SessionToken,
-		UserID:       session.UserID,
+		Session: session,
 	})
 	if err != nil {
 		log.Println(err)
@@ -53,13 +51,6 @@ func (s *SessionHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 type createSessionRequest struct {
-	Expires      time.Time `json:"expires"`
-	SessionToken string    `json:"session_token"`
-	UserID       string    `json:"user_id"`
-}
-
-type sessionResponse struct {
-	ID           string    `json:"id"`
 	Expires      time.Time `json:"expires"`
 	SessionToken string    `json:"session_token"`
 	UserID       string    `json:"user_id"`
@@ -76,10 +67,7 @@ func (s *SessionHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := json.Marshal(&sessionResponse{
-		ID:           session.ID,
-		Expires:      session.Expires,
-		SessionToken: session.SessionToken,
-		UserID:       session.UserID,
+		Session: session,
 	})
 	if err != nil {
 		log.Println(err)
@@ -90,7 +78,7 @@ func (s *SessionHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *SessionHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
+	sessionToken := r.URL.Query().Get("session_token")
 
 	var requestBody updateSessionRequest
 	err := json.NewDecoder(r.Body).Decode(&requestBody)
@@ -100,7 +88,7 @@ func (s *SessionHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, err := s.SessionUseCase.UpdateSessionExpires(context.Background(), id, requestBody.Expires)
+	session, err := s.SessionUseCase.UpdateSessionExpires(context.Background(), sessionToken, requestBody.Expires)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -108,10 +96,7 @@ func (s *SessionHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := json.Marshal(&sessionResponse{
-		ID:           session.ID,
-		Expires:      session.Expires,
-		SessionToken: session.SessionToken,
-		UserID:       session.UserID,
+		Session: session,
 	})
 	if err != nil {
 		log.Println(err)
@@ -135,4 +120,8 @@ func (s *SessionHandler) HandleDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+
+type sessionResponse struct {
+	Session *model.Session `json:"session"`
 }

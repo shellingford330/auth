@@ -6,7 +6,6 @@ import (
 
 	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/domain/repository"
-	"github.com/shellingford330/auth/pkg/ulid"
 )
 
 type sessionRepositoryImpl struct {
@@ -18,34 +17,30 @@ func NewSessionRepository(db *sql.DB) repository.SessionRepository {
 }
 
 func (s *sessionRepositoryImpl) InsertSession(ctx context.Context, session *model.Session) (*model.Session, error) {
-	stmt, err := s.DB.Prepare("INSERT INTO sessions (id, expires, session_token, user_id) VALUES (?, ?, ?, ?)")
+	stmt, err := s.DB.Prepare("INSERT INTO sessions (expires, session_token, user_id) VALUES (?, ?, ?)")
 	if err != nil {
 		return nil, err
 	}
-	id := ulid.Generate()
-	if _, err = stmt.Exec(id, session.Expires, session.SessionToken, session.UserID); err != nil {
-		return nil, err
-	}
-	if err := session.SetID(id); err != nil {
+	if _, err = stmt.Exec(session.Expires, session.SessionToken, session.UserID); err != nil {
 		return nil, err
 	}
 	return session, nil
 }
 
-func (s *sessionRepositoryImpl) UpdateSession(ctx context.Context, session *model.Session) error {
-	stmt, err := s.DB.Prepare("UPDATE sessions SET expires = ?, session_token = ?, user_id = ? WHERE id = ?")
+func (s *sessionRepositoryImpl) UpdateSession(ctx context.Context, session *model.Session) (*model.Session, error) {
+	stmt, err := s.DB.Prepare("UPDATE sessions SET expires = ?, user_id = ? WHERE session_token = ?")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = stmt.Exec(session.ID, session.Expires, session.SessionToken, session.UserID, session.ID)
+	_, err = stmt.Exec(session.Expires, session.UserID, session.SessionToken)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return session, nil
 }
 
-func (s *sessionRepositoryImpl) DeleteSession(ctx context.Context, id string) error {
-	_, err := s.DB.Exec("DELETE FROM sessions WHERE id = ?", id)
+func (s *sessionRepositoryImpl) DeleteSession(ctx context.Context, sessionToken string) error {
+	_, err := s.DB.Exec("DELETE FROM sessions WHERE session_token = ?", sessionToken)
 	return err
 }

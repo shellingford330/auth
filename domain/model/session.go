@@ -6,10 +6,9 @@ import (
 )
 
 type Session struct {
-	ID           string    `json:"id"`
 	Expires      time.Time `json:"expires"`
 	SessionToken string    `json:"session_token"`
-	UserID       string    `json:"user_ud"`
+	UserID       string    `json:"user_id"`
 }
 
 func NewSession(expires time.Time, sessionToken, userID string) (*Session, error) {
@@ -24,14 +23,6 @@ func NewSession(expires time.Time, sessionToken, userID string) (*Session, error
 		return nil, err
 	}
 	return &session, nil
-}
-
-func (s *Session) SetID(id string) error {
-	if id == "" {
-		return errors.New("id is blank")
-	}
-	s.ID = id
-	return nil
 }
 
 func (s *Session) SetExpires(expires time.Time) error {
