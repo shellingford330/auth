@@ -13,3 +13,7 @@ protoc:
 		--go_out=$(PROTO_GEN_DIR)/auth --go_opt=paths=source_relative \
 		--go-grpc_out=$(PROTO_GEN_DIR)/auth --go-grpc_opt=paths=source_relative \
 		$(PROTO_DIR)/auth/auth.proto
+
+.PHONY: gen
+gen:
+	go generate -x ./...

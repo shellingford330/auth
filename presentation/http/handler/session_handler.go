@@ -29,9 +29,8 @@ func (s *SessionHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session, err := s.CreateSession(context.Background(), &usecase.CreateSessionParams{
-		Expires:      requestBody.Expires,
-		SessionToken: requestBody.SessionToken,
-		UserID:       requestBody.UserID,
+		Expires: requestBody.Expires,
+		UserID:  requestBody.UserID,
 	})
 	if err != nil {
 		log.Println(err)
@@ -51,9 +50,8 @@ func (s *SessionHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 type createSessionRequest struct {
-	Expires      time.Time `json:"expires"`
-	SessionToken string    `json:"session_token"`
-	UserID       string    `json:"user_id"`
+	Expires time.Time `json:"expires"`
+	UserID  string    `json:"user_id"`
 }
 
 func (s *SessionHandler) HandleGet(w http.ResponseWriter, r *http.Request) {

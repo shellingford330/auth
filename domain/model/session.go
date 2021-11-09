@@ -8,15 +8,13 @@ import (
 type Session struct {
 	Expires      time.Time `json:"expires"`
 	SessionToken string    `json:"session_token"`
+	AccessToken  string    `json:"access_token"`
 	UserID       string    `json:"user_id"`
 }
 
-func NewSession(expires time.Time, sessionToken, userID string) (*Session, error) {
+func NewSession(expires time.Time, userID string) (*Session, error) {
 	session := Session{}
 	if err := session.SetExpires(expires); err != nil {
-		return nil, err
-	}
-	if err := session.SetSessionToken(sessionToken); err != nil {
 		return nil, err
 	}
 	if err := session.SetUserID(userID); err != nil {
@@ -38,6 +36,14 @@ func (s *Session) SetSessionToken(sessionToken string) error {
 		return errors.New("sessionToken is blank")
 	}
 	s.SessionToken = sessionToken
+	return nil
+}
+
+func (s *Session) SetAccessToken(accessToken string) error {
+	if accessToken == "" {
+		return errors.New("accessToken is blank")
+	}
+	s.AccessToken = accessToken
 	return nil
 }
 

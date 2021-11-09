@@ -7,7 +7,7 @@ import (
 
 	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/domain/repository"
-	"github.com/shellingford330/auth/pkg/ulid"
+	"github.com/shellingford330/auth/domain/service"
 	"github.com/shellingford330/auth/usecase/query"
 )
 
@@ -19,20 +19,21 @@ type SessionUseCase interface {
 }
 
 type sessionUseCaseImpl struct {
+	service.SessionService
 	repository.SessionRepository
 	query.SessionQueryService
 }
 
 func NewSessionUseCase(r repository.SessionRepository, q query.SessionQueryService) SessionUseCase {
-	return &sessionUseCaseImpl{r, q}
+	return &sessionUseCaseImpl{service.NewSessionService(r), r, q}
 }
 
 func (s *sessionUseCaseImpl) CreateSession(ctx context.Context, params *CreateSessionParams) (*model.Session, error) {
-	session, err := model.NewSession(params.Expires, ulid.Generate(), params.UserID)
+	session, err := model.NewSession(params.Expires, params.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize account: %w", err)
 	}
-	session, err = s.SessionRepository.InsertSession(ctx, session)
+	session, err = s.SessionService.CreateSession(ctx, session)
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert session: %w", err)
 	}
@@ -40,9 +41,8 @@ func (s *sessionUseCaseImpl) CreateSession(ctx context.Context, params *CreateSe
 }
 
 type CreateSessionParams struct {
-	Expires      time.Time
-	SessionToken string
-	UserID       string
+	Expires time.Time
+	UserID  string
 }
 
 func (s *sessionUseCaseImpl) GetSessionBySessionToken(ctx context.Context, sessionToken string) (*model.Session, error) {

@@ -3,9 +3,11 @@ package rdb
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/domain/repository"
+	"github.com/shellingford330/auth/pkg/ulid"
 )
 
 type sessionRepositoryImpl struct {
@@ -16,12 +18,34 @@ func NewSessionRepository(db *sql.DB) repository.SessionRepository {
 	return &sessionRepositoryImpl{db}
 }
 
+func (s *sessionRepositoryImpl) GetSessionByUserID(ctx context.Context, userID string) (*model.Session, error) {
+	session := model.Session{}
+	err := s.DB.QueryRow(
+		"SELECT expires, session_token, access_token, user_id FROM sessions WHERE user_id = ?",
+		userID,
+	).Scan(&session.Expires, &session.SessionToken, &session.AccessToken, &session.UserID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &session, nil
+}
+
 func (s *sessionRepositoryImpl) InsertSession(ctx context.Context, session *model.Session) (*model.Session, error) {
-	stmt, err := s.DB.Prepare("INSERT INTO sessions (expires, session_token, user_id) VALUES (?, ?, ?)")
+	sessionToken, accessToken := ulid.Generate(), ulid.Generate()
+	stmt, err := s.DB.Prepare("INSERT INTO sessions (expires, session_token, access_token, user_id) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return nil, err
 	}
-	if _, err = stmt.Exec(session.Expires, session.SessionToken, session.UserID); err != nil {
+	if _, err = stmt.Exec(session.Expires, sessionToken, accessToken, session.UserID); err != nil {
+		return nil, err
+	}
+	if err := session.SetSessionToken(sessionToken); err != nil {
+		return nil, err
+	}
+	if err := session.SetAccessToken(accessToken); err != nil {
 		return nil, err
 	}
 	return session, nil

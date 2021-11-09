@@ -23,9 +23,9 @@ func (s *sessionQueryServiceImpl) GetSessionBySessionToken(
 ) (*model.Session, error) {
 	session := model.Session{}
 	err := s.DB.QueryRow(
-		"SELECT expires, session_token, user_id FROM sessions WHERE session_token = ?",
+		"SELECT expires, session_token, access_token, user_id FROM sessions WHERE session_token = ?",
 		sessionToken,
-	).Scan(&session.Expires, &session.SessionToken, &session.UserID)
+	).Scan(&session.Expires, &session.SessionToken, &session.AccessToken, &session.UserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
