@@ -7,7 +7,7 @@ import (
 
 func AccessLog(nextFunc http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("host=%s, method=%s, path=%s, query=%s\n", r.RemoteAddr, r.Method, r.URL.Path, r.URL.Query())
+		log.Printf("host=%s, method=%s, path=%s, query=%s\n", r.RemoteAddr, r.Method, r.URL.Path, r.URL.RawQuery)
 
 		nextFunc(w, r)
 	}
