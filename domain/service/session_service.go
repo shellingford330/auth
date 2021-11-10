@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/domain/repository"
 )
 
 type SessionService interface {
-	CreateSession(ctx context.Context, newSession *model.Session) (*model.Session, error)
+	VerifyAccessToken(ctx context.Context, accessToken, userID string) error
 }
 
 type sessionServiceImpl struct {
@@ -20,21 +19,18 @@ func NewSessionService(r repository.SessionRepository) SessionService {
 	return &sessionServiceImpl{r}
 }
 
-func (s *sessionServiceImpl) CreateSession(ctx context.Context, newSession *model.Session) (*model.Session, error) {
-	session, err := s.SessionRepository.GetSessionByUserID(ctx, newSession.UserID)
+// verify that session of the access token belongs to the user
+func (s *sessionServiceImpl) VerifyAccessToken(ctx context.Context, accessToken, userID string) error {
+	session, err := s.GetSessionByAccessToken(ctx, accessToken)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get session. userID=%s: %w", newSession.UserID, err)
+		return fmt.Errorf("failed to get session by accessToken: %w", err)
 	}
-	if session != nil {
-		// 指定されたユーザのセッションが存在する場合、既存のセッションを削除して新たなセッションを作成する
-		if err = s.SessionRepository.DeleteSession(ctx, session.SessionToken); err != nil {
-			return nil, fmt.Errorf("failed to delete session: %w", err)
-		}
+	if session == nil {
+		return fmt.Errorf("session not found. accessToken=%s: %w", accessToken, err)
 	}
 
-	newSession, err = s.SessionRepository.InsertSession(ctx, newSession)
-	if err != nil {
-		return nil, fmt.Errorf("failed to insert session: %w", err)
+	if session.UserID != userID {
+		return fmt.Errorf("the session of the accessToken doesn't belong to the user. userID=%s: %w", userID, err)
 	}
-	return newSession, nil
+	return nil
 }

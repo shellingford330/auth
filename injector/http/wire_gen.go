@@ -4,12 +4,12 @@
 //go:build !wireinject
 // +build !wireinject
 
-package main
+package http
 
 import (
+	"github.com/shellingford330/auth/domain/service"
 	"github.com/shellingford330/auth/infra/rdb"
 	"github.com/shellingford330/auth/infra/rdb/mysql"
-	"github.com/shellingford330/auth/presentation"
 	"github.com/shellingford330/auth/presentation/http"
 	"github.com/shellingford330/auth/presentation/http/handler"
 	"github.com/shellingford330/auth/usecase"
@@ -17,19 +17,20 @@ import (
 
 // Injectors from wire.go:
 
-func initializeServer() presentation.Server {
+func InitServer() (*http.Server, error) {
 	db := _wireDBValue
 	userRepository := rdb.NewUserRepository(db)
 	userQueryService := rdb.NewUserQueryService(db)
-	userUseCase := usecase.NewUserUseCase(userRepository, userQueryService)
+	sessionRepository := rdb.NewSessionRepository(db)
+	sessionService := service.NewSessionService(sessionRepository)
+	userUseCase := usecase.NewUserUseCase(userRepository, userQueryService, sessionService)
 	accountRepository := rdb.NewAccountRepository(db)
 	accountUseCase := usecase.NewAccountUseCase(accountRepository)
-	sessionRepository := rdb.NewSessionRepository(db)
 	sessionQueryService := rdb.NewSessionQueryService(db)
 	sessionUseCase := usecase.NewSessionUseCase(sessionRepository, sessionQueryService)
-	handlerHandler := handler.NewHandler(userUseCase, accountUseCase, sessionUseCase)
-	server := http.NewServer(handlerHandler)
-	return server
+	httpHandler := handler.New(userUseCase, accountUseCase, sessionUseCase)
+	server := http.NewServer(httpHandler)
+	return server, nil
 }
 
 var (

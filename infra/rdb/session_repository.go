@@ -18,11 +18,11 @@ func NewSessionRepository(db *sql.DB) repository.SessionRepository {
 	return &sessionRepositoryImpl{db}
 }
 
-func (s *sessionRepositoryImpl) GetSessionByUserID(ctx context.Context, userID string) (*model.Session, error) {
+func (s *sessionRepositoryImpl) GetSessionByAccessToken(ctx context.Context, accessToken string) (*model.Session, error) {
 	session := model.Session{}
 	err := s.DB.QueryRow(
-		"SELECT expires, session_token, access_token, user_id FROM sessions WHERE user_id = ?",
-		userID,
+		"SELECT expires, session_token, access_token, user_id FROM sessions WHERE access_token = ?",
+		accessToken,
 	).Scan(&session.Expires, &session.SessionToken, &session.AccessToken, &session.UserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

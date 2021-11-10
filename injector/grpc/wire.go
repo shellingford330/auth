@@ -1,21 +1,22 @@
 //go:build wireinject
 // +build wireinject
 
-package main
+package grpc
 
 import (
 	"github.com/google/wire"
+	"github.com/shellingford330/auth/domain/service"
 	"github.com/shellingford330/auth/infra/rdb/mysql"
-	"github.com/shellingford330/auth/presentation"
-	"github.com/shellingford330/auth/presentation/http"
+	"github.com/shellingford330/auth/presentation/grpc"
 	"github.com/shellingford330/auth/usecase"
 )
 
-func initializeServer() presentation.Server {
+func InitServer() (*grpc.Server, error) {
 	wire.Build(
-		http.Set,
+		grpc.Set,
+		service.Set,
 		usecase.Set,
 		mysql.Set,
 	)
-	return nil
+	return nil, nil
 }

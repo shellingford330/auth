@@ -1,36 +1,37 @@
 package http
 
 import (
-	"log"
+	"context"
 	"net/http"
+	"time"
 
 	"github.com/google/wire"
 	"github.com/shellingford330/auth/presentation"
 	"github.com/shellingford330/auth/presentation/http/handler"
-	"github.com/shellingford330/auth/presentation/http/middleware"
 )
 
 type Server struct {
-	*handler.Handler
+	*http.Server
 }
 
-var Set = wire.NewSet(NewServer, handler.NewHandler)
+var _ presentation.Server = (*Server)(nil)
 
-func NewServer(h *handler.Handler) presentation.Server {
-	return &Server{h}
+var Set = wire.NewSet(NewServer, handler.New)
+
+func NewServer(h http.Handler) *Server {
+	s := &http.Server{
+		Addr:    ":8080",
+		Handler: h,
+	}
+	return &Server{s}
 }
 
 func (s *Server) Start() error {
-	http.HandleFunc("/user/create", middleware.Use(s.UserHandler.HandleCreate))
-	http.HandleFunc("/user", middleware.Use(s.UserHandler.HandleGet))
-	http.HandleFunc("/user/account", middleware.Use(s.UserHandler.HandleGetByProviderAccountID))
-	http.HandleFunc("/user/update", middleware.Use(s.UserHandler.HandleUpdate))
-	http.HandleFunc("/account/link", middleware.Use(s.AccountHandler.HandleLinkAccount))
-	http.HandleFunc("/session/create", middleware.Use(s.SessionHandler.HandleCreate))
-	http.HandleFunc("/session", middleware.Use(s.SessionHandler.HandleGet))
-	http.HandleFunc("/session/update", middleware.Use(s.SessionHandler.HandleUpdate))
-	http.HandleFunc("/session/delete", middleware.Use(s.SessionHandler.HandleDelete))
-	// TODO: ENVから取得する
-	log.Println("Server running ...")
-	return http.ListenAndServe(":8080", nil)
+	return s.ListenAndServe()
+}
+
+func (s *Server) GracefulShutdown() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	return s.Shutdown(ctx)
 }

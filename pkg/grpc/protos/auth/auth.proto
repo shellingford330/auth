@@ -4,18 +4,17 @@ package auth;
 option go_package = "github.com/shellingford330/auth/presentation/grpc/go/auth";
 
 service Auth {
-  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
+  rpc VerifyAccessToken(VerifyAccessTokenRequest) returns (VerifyAccessTokenResponse) {}
 }
 
-message CreateUserRequest {
-  string Name = 1;
-  string Email = 2;
-  string Image = 3;
+message VerifyAccessTokenRequest {
+  string access_token = 1;
+  string user_id = 2;
 }
 
-message CreateUserResponse {
-  string ID = 1;
-  string Name = 2;
-  string Email = 3;
-  string Image = 4;
+message VerifyAccessTokenResponse {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string image = 4;
 } 

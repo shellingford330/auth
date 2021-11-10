@@ -7,7 +7,6 @@ import (
 
 	"github.com/shellingford330/auth/domain/model"
 	"github.com/shellingford330/auth/domain/repository"
-	"github.com/shellingford330/auth/domain/service"
 	"github.com/shellingford330/auth/usecase/query"
 )
 
@@ -19,13 +18,12 @@ type SessionUseCase interface {
 }
 
 type sessionUseCaseImpl struct {
-	service.SessionService
 	repository.SessionRepository
 	query.SessionQueryService
 }
 
 func NewSessionUseCase(r repository.SessionRepository, q query.SessionQueryService) SessionUseCase {
-	return &sessionUseCaseImpl{service.NewSessionService(r), r, q}
+	return &sessionUseCaseImpl{r, q}
 }
 
 func (s *sessionUseCaseImpl) CreateSession(ctx context.Context, params *CreateSessionParams) (*model.Session, error) {
@@ -33,7 +31,7 @@ func (s *sessionUseCaseImpl) CreateSession(ctx context.Context, params *CreateSe
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize account: %w", err)
 	}
-	session, err = s.SessionService.CreateSession(ctx, session)
+	session, err = s.InsertSession(ctx, session)
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert session: %w", err)
 	}
