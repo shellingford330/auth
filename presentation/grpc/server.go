@@ -20,13 +20,13 @@ var _ presentation.Server = (*Server)(nil)
 var Set = wire.NewSet(NewServer, NewHandler)
 
 func NewServer(h *Handler) *Server {
-	var opts []grpc.ServerOption
-	grpcServer := grpc.NewServer(opts...)
+	grpcServer := grpc.NewServer()
 	pb.RegisterAuthServer(grpcServer, h)
 	return &Server{grpcServer}
 }
 
 func (s *Server) Start() error {
+	// TODO: load config
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", "localhost", "8081"))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
