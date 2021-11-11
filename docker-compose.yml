@@ -1,11 +1,13 @@
 version: "3.8"
 services:
   api:
-    build: .
+    build: 
+      context: .
+      target: dev
     command: /bin/air
     ports: 
       - 8080:8080
-      - 8081:8081
+      - 50051:50051
     volumes:
       - .:/go/src/app
     tty: true # 標準出力先を標準入力元のターミナルと同じに(colorizeなどが有効化されるなど)
