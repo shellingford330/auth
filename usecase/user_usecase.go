@@ -15,7 +15,7 @@ type UserUseCase interface {
 	GetUserByProviderAccountID(ctx context.Context, providerID, providerAccountID string) (*model.User, error)
 	CreateUser(ctx context.Context, name, email, image string) (*model.User, error)
 	UpdateUser(ctx context.Context, id, name, email, image string) (*model.User, error)
-	VerifyAccessToken(ctx context.Context, accessToken, userID string) (*model.User, error)
+	VerifyAccessToken(ctx context.Context, accessToken string) (*model.User, error)
 }
 
 type userUseCaseImpl struct {
@@ -71,14 +71,15 @@ func (u *userUseCaseImpl) UpdateUser(ctx context.Context, id, name, email, image
 	return user, nil
 }
 
-func (u *userUseCaseImpl) VerifyAccessToken(ctx context.Context, accessToken, userID string) (*model.User, error) {
-	if err := u.SessionService.VerifyAccessToken(ctx, accessToken, userID); err != nil {
+func (u *userUseCaseImpl) VerifyAccessToken(ctx context.Context, accessToken string) (*model.User, error) {
+	session, err := u.SessionService.VerifyAccessToken(ctx, accessToken)
+	if err != nil {
 		return nil, fmt.Errorf("failed to verify accessToken: %w", err)
 	}
 
-	user, err := u.GetUser(ctx, userID, "")
+	user, err := u.GetUser(ctx, session.UserID, "")
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user. userID=%s: %w", userID, err)
+		return nil, fmt.Errorf("failed to get user. userID=%s: %w", session.UserID, err)
 	}
 	return user, nil
 }

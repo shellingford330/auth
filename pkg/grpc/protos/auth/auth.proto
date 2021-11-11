@@ -9,7 +9,6 @@ service Auth {
 
 message VerifyAccessTokenRequest {
   string access_token = 1;
-  string user_id = 2;
 }
 
 message VerifyAccessTokenResponse {
