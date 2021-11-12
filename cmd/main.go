@@ -26,7 +26,6 @@ func main() {
 
 	// Start server...
 	go func() {
-		log.Println("HTTP server running ...")
 		if err := httpServer.Start(); err != nil {
 			panic(err)
 		}

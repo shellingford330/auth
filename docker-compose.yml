@@ -6,15 +6,15 @@ services:
       target: dev
     command: /bin/air
     ports: 
-      - 8080:8080
+      - 4545:4545
       - 50051:50051
     volumes:
       - .:/go/src/app
     tty: true # 標準出力先を標準入力元のターミナルと同じに(colorizeなどが有効化されるなど)
     depends_on: 
       - mysql
-    # environment:
-    #   AUTH_DB_HOST: mysql
+    environment:
+      DB_HOST: mysql
   mysql:
     image: mysql:5.7
     restart: always

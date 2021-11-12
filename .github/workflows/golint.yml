@@ -1,0 +1,26 @@
+name: golint
+on: push
+
+jobs:
+  staticcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run staticcheck
+        uses: reviewdog/action-staticcheck@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-check
+          filter_mode: nofilter
+          fail_on_error: true
+  golangci-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run golangci-lint
+        uses: reviewdog/action-golangci-lint@v2.0.2
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-check
+          filter_mode: nofilter
+          fail_on_error: true

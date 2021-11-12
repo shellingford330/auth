@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/google/wire"
+	"github.com/shellingford330/auth/internal/config"
 	pb "github.com/shellingford330/auth/pkg/grpc/go/auth"
 	"github.com/shellingford330/auth/presentation"
 	"google.golang.org/grpc"
@@ -26,8 +27,7 @@ func NewServer(h *Handler) *Server {
 }
 
 func (s *Server) Start() error {
-	// TODO: load config
-	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", "50051"))
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", config.Config.GRPCServerHost(), config.Config.GRPCServerPort()))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
