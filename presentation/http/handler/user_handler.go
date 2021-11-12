@@ -44,7 +44,11 @@ func (u *UserHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Write(data)
+	if _, err := w.Write(data); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 type userCreateRequest struct {
@@ -76,7 +80,11 @@ func (u *UserHandler) HandleGetByProviderAccountID(w http.ResponseWriter, r *htt
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Write(data)
+	if _, err := w.Write(data); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (u *UserHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
@@ -98,7 +106,11 @@ func (u *UserHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Write(data)
+	if _, err := w.Write(data); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (u *UserHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +139,11 @@ func (u *UserHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Write(data)
+	if _, err := w.Write(data); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 type userUpdateRequest struct {
