@@ -17,3 +17,9 @@ protoc:
 .PHONY: gen
 gen:
 	go generate -x ./...
+
+.PHONY: test
+test: FLAGS ?= -v -race -parallel 3
+test:
+	$(GO_ENV) go test $(FLAGS) ./...
+

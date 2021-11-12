@@ -1,0 +1,24 @@
+name: golint
+on: push
+
+jobs:
+  staticcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run staticcheck
+        uses: reviewdog/action-staticcheck@v1
+        with:
+          reporter: github-pr-review
+          # Report all results.
+          filter_mode: nofilter
+          # Exit with 1 when it find at least one finding.
+          fail_on_error: true
+  golangci-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run golangci-lint
+        uses: reviewdog/action-golangci-lint@v2.0.2
+        with:
+          go_version: '1.17'

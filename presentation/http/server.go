@@ -2,10 +2,13 @@ package http
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/google/wire"
+	"github.com/shellingford330/auth/internal/config"
 	"github.com/shellingford330/auth/presentation"
 	"github.com/shellingford330/auth/presentation/http/handler"
 )
@@ -20,13 +23,14 @@ var Set = wire.NewSet(NewServer, handler.New)
 
 func NewServer(h http.Handler) *Server {
 	s := &http.Server{
-		Addr:    ":8080",
+		Addr:    fmt.Sprintf("%s:%s", config.Config.HTTPServerHost(), config.Config.HTTPServerPort()),
 		Handler: h,
 	}
 	return &Server{s}
 }
 
 func (s *Server) Start() error {
+	log.Printf("HTTP server running and listen %s ...\n", s.Addr)
 	return s.ListenAndServe()
 }
 
