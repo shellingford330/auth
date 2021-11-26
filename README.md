@@ -5,6 +5,21 @@
 # auth
 Microservice for user authentication
 
+## How to use
+
+```
+$ go get -u github.com/shellingford330/auth@latest
+```
+
+## Setup
+
+Run server and middleware
+
+```
+$ docker compose up
+```
+
+
 ## 参考
 - https://speakerdeck.com/oracle4engineer/authentication-and-authorization-in-microservices-and-jwt
 - https://please-sleep.cou929.nu/microservices-auth-design.html
