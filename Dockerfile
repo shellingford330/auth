@@ -1,4 +1,4 @@
-FROM golang:1.17 AS dev
+FROM golang:1.18.0 AS dev
 
 WORKDIR /go/src/app
 ADD . /go/src/app
